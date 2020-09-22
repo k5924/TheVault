@@ -1,6 +1,11 @@
 import sys
+import os
+from string import ascii_uppercase
 from startPage import Ui_startPage
 from PyQt5 import QtWidgets
+from Crypto.Random import get_random_bytes
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
 
 
 class MainWindow(QtWidgets.QWidget):
@@ -8,6 +13,30 @@ class MainWindow(QtWidgets.QWidget):
         super().__init__(*args, **kwargs)
         self.ui = Ui_startPage()
         self.ui.setupUi(self)
+        self.ui.startButton.clicked.connect(self.createVaultFiles)
+
+    def createVaultFiles(self):
+        key = get_random_bytes(32)  # 32 bytes is 256 bits
+        data = b''  # basic data for fiel to encrypt
+        desktopPath = os.environ["HOMEPATH"] + "\Desktop"  # finds path to desktop
+        for driveLetter in ascii_uppercase:  # find drive desktop folder is on
+            if os.path.exists("{0}:{1}".format(driveLetter, desktopPath)):
+                desktopPath = "{0}:{1}".format(driveLetter, desktopPath)
+        keyFile = open(desktopPath + "\\key.bin", "wb")
+        keyFile.write(key)  # writes encryption key to file
+        keyFile.close
+        cipher = AES.new(key, AES.MODE_CBC)
+        ciphered_data = cipher.encrypt(pad(data, AES.block_size))
+        vaultFile = open(desktopPath + "\\vault.bin", "wb")
+        vaultFile.write(cipher.iv)
+        vaultFile.write(ciphered_data)
+        vaultFile.close()
+        message = QtWidgets.QMessageBox()
+        message.setWindowTitle("Process Completed")
+        message.setText("Created vault.bin and key.bin")
+        message.setIcon(QtWidgets.QMessageBox.Information)
+        message.setDefaultButton(QtWidgets.QMessageBox.Ok)
+        message.exec_()
 
 
 if __name__ == "__main__":
