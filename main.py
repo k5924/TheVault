@@ -18,7 +18,7 @@ class MainWindow(QtWidgets.QWidget):
 
     def createVaultFiles(self):
         key = get_random_bytes(32)  # 32 bytes is 256 bits
-        data = b''  # basic data for fiel to encrypt
+        data = b''  # basic data for file to encrypt
         desktopPath = getPathToDesktop()
         keyFile = open(desktopPath + "\\key.bin", "wb")
         keyFile.write(key)  # writes encryption key to file
