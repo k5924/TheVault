@@ -19,13 +19,7 @@ class MainWindow(QtWidgets.QWidget):
     def createVaultFiles(self):
         key = get_random_bytes(32)  # 32 bytes is 256 bits
         data = b''  # basic data for fiel to encrypt
-        if system() == 'Windows':
-            desktopPath = os.environ["HOMEPATH"] + "\Desktop"  # finds path to desktop
-            for driveLetter in ascii_uppercase:  # find drive desktop folder is on
-                if os.path.exists("{0}:{1}".format(driveLetter, desktopPath)):
-                    desktopPath = "{0}:{1}".format(driveLetter, desktopPath)
-        else:
-            desktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop')
+        desktopPath = getPathToDesktop()
         keyFile = open(desktopPath + "\\key.bin", "wb")
         keyFile.write(key)  # writes encryption key to file
         keyFile.close
@@ -41,6 +35,17 @@ class MainWindow(QtWidgets.QWidget):
         message.setIcon(QtWidgets.QMessageBox.Information)
         message.setDefaultButton(QtWidgets.QMessageBox.Ok)
         message.exec_()
+
+
+def getPathToDesktop():
+    if system() == 'Windows':
+        desktopPath = os.environ["HOMEPATH"] + "\Desktop"  # finds path to desktop
+        for driveLetter in ascii_uppercase:  # find drive desktop folder is on
+            if os.path.exists("{0}:{1}".format(driveLetter, desktopPath)):
+                desktopPath = "{0}:{1}".format(driveLetter, desktopPath)
+    else:
+        desktopPath = os.path.join(os.path.join(os.path.expanduser('~')), 'Desktop')
+    return desktopPath
 
 
 if __name__ == "__main__":
