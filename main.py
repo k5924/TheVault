@@ -3,6 +3,7 @@ import os
 from platform import system
 from string import ascii_uppercase
 from startPage import Ui_startPage
+from test import Ui_Form
 from PyQt5 import QtWidgets
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
@@ -15,6 +16,7 @@ class MainWindow(QtWidgets.QWidget):
         self.ui = Ui_startPage()
         self.ui.setupUi(self)
         self.ui.startButton.clicked.connect(self.createVaultFiles)
+        self.ui.openButton.clicked.connect(self.openVaultFiles)
 
     def createVaultFiles(self):
         key = get_random_bytes(32)  # 32 bytes is 256 bits
@@ -35,6 +37,18 @@ class MainWindow(QtWidgets.QWidget):
         message.setIcon(QtWidgets.QMessageBox.Information)
         message.setDefaultButton(QtWidgets.QMessageBox.Ok)
         message.exec_()
+
+    def openVaultFiles(self):
+        self.newWindow = generateOrViewAllAccounts()
+        self.newWindow.show()
+        self.hide()
+
+
+class generateOrViewAllAccounts(QtWidgets.QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ui = Ui_Form()
+        self.ui.setupUi(self)
 
 
 def getPathToDesktop():
