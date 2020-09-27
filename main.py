@@ -1,13 +1,15 @@
 import sys
 import os
 from platform import system
-from string import ascii_uppercase
+from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 from startPage import Ui_startPage
-from test import Ui_Form
+from genPassPage import Ui_passwordGen
 from PyQt5 import QtWidgets, QtCore
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
+
+global KEYPATH, VAULTPATH   # global variabls to store paths to vault and key file
 
 
 class MainWindow(QtWidgets.QWidget):
@@ -64,17 +66,9 @@ class MainWindow(QtWidgets.QWidget):
         else:
             # exception handling
             try:
-                readVaultFile = open(self.vaultPath, 'rb')  # Open the file to read bytes
-                iv = readVaultFile.read(16)  # Read the iv out - this is 16 bytes long
-                ciphered_data = readVaultFile.read()  # Read the rest of the data
-                readVaultFile.close()
-                readKeyFile = open(self.keyPath, 'rb')
-                key = readKeyFile.read()
-                cipher = AES.new(key, AES.MODE_CBC, iv=iv)  # Setup cipher
-                # Decrypt and then up-pad the result
-                self.data = unpad(cipher.decrypt(ciphered_data), AES.block_size)
+                getData(self.keyPath, self.vaultPath)
                 # display new window for generating password or viewing accounts
-                self.newWindow = generateOrViewAllAccounts()
+                self.newWindow = generatePasswordWin()
                 self.newWindow.show()   # show new window
                 self.hide()  # close old window
             except ValueError:
@@ -82,12 +76,25 @@ class MainWindow(QtWidgets.QWidget):
                 # Alert function to show error message
 
 
-class generateOrViewAllAccounts(QtWidgets.QWidget):
-    # displays window when vault is open
+class generatePasswordWin(QtWidgets.QWidget):
+    # displays generate password window when vault is open
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.ui = Ui_Form()
+        self.ui = Ui_passwordGen()
         self.ui.setupUi(self)
+        self.ui.genBtn.clicked.connect(self.genPassword)
+
+    def genPassword(self):
+        passwordOptions = ""
+        if self.ui.lowerCaseCheck.isChecked():
+            passwordOptions += ascii_lowercase
+        if self.ui.upperCaseCheck.isChecked():
+            passwordOptions += ascii_uppercase
+        if self.ui.numbersCheck.isChecked():
+            passwordOptions += digits
+        if self.ui.numbersCheck.isChecked():
+            passwordOptions += punctuation
+        print(passwordOptions)
 
 
 def getPathToDesktop():
@@ -109,6 +116,21 @@ def Alert(title, icon, text):
     message.setIcon(icon)
     message.setText(text)
     message.exec_()
+
+
+def getData(pathToKey, pathToVault):    # allows me to access Paths throughout document
+    global KEYPATH, VAULTPATH
+    KEYPATH, VAULTPATH = pathToKey, pathToVault
+    readVaultFile = open(VAULTPATH, 'rb')  # Open the file to read bytes
+    iv = readVaultFile.read(16)  # Read the iv out - this is 16 bytes long
+    ciphered_data = readVaultFile.read()  # Read the rest of the data
+    readVaultFile.close()
+    readKeyFile = open(KEYPATH, 'rb')
+    key = readKeyFile.read()
+    cipher = AES.new(key, AES.MODE_CBC, iv=iv)  # Setup cipher
+    # Decrypt and then up-pad the result
+    data = unpad(cipher.decrypt(ciphered_data), AES.block_size)
+    return data
 
 
 if __name__ == "__main__":
