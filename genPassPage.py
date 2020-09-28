@@ -113,10 +113,10 @@ class Ui_passwordGen(object):
         self.savePasswordFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.savePasswordFrame.setObjectName("savePasswordFrame")
         self.generatedPassLabel = QtWidgets.QLabel(self.savePasswordFrame)
-        self.generatedPassLabel.setGeometry(QtCore.QRect(20, 10, 291, 51))
+        self.generatedPassLabel.setGeometry(QtCore.QRect(0, 10, 321, 51))
         font = QtGui.QFont()
         font.setFamily("Microsoft YaHei UI")
-        font.setPointSize(24)
+        font.setPointSize(15)
         self.generatedPassLabel.setFont(font)
         self.generatedPassLabel.setStyleSheet("color: rgb(2, 13, 165);\n"
 "border:1px, red;")

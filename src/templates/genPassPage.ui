@@ -285,16 +285,16 @@ background-color: rgb(2, 13, 165);</string>
    <widget class="QLabel" name="generatedPassLabel">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>0</x>
       <y>10</y>
-      <width>291</width>
+      <width>321</width>
       <height>51</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Microsoft YaHei UI</family>
-      <pointsize>24</pointsize>
+      <pointsize>15</pointsize>
      </font>
     </property>
     <property name="styleSheet">

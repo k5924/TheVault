@@ -1,5 +1,6 @@
 import sys
 import os
+import random
 from platform import system
 from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 from startPage import Ui_startPage
@@ -41,7 +42,7 @@ class MainWindow(QtWidgets.QWidget):
 
     def getKeyFile(self):
         file = QtWidgets.QFileDialog.getOpenFileName(
-            self, 'Open file', "~", "All Files (*)")  # lets user choose files from explorer
+            self, 'Open file', "", "All Files (*)")  # lets user choose files from explorer
         url = QtCore.QUrl.fromLocalFile(file[0])    # gets path to file and stores it as an object
         self.ui.keyFileLabel.setText(url.fileName())    # adjusts file name in gui
         self.ui.keyFileLabel.adjustSize()   # adjusts size of text wrapper for file name in gui
@@ -49,7 +50,7 @@ class MainWindow(QtWidgets.QWidget):
 
     def getVaultFile(self):
         file = QtWidgets.QFileDialog.getOpenFileName(
-            self, 'Open file', "~", "All Files (*)")  # lets user choose files from explorer
+            self, 'Open file', "", "All Files (*)")  # lets user choose files from explorer
         url = QtCore.QUrl.fromLocalFile(file[0])    # gets path to file and stores it as an object
         self.ui.vaultFileLabel.setText(url.fileName())   # adjusts file name in gui
         self.ui.vaultFileLabel.adjustSize()     # adjusts size of text wrapper for file name in gui
@@ -83,18 +84,39 @@ class generatePasswordWin(QtWidgets.QWidget):
         self.ui = Ui_passwordGen()
         self.ui.setupUi(self)
         self.ui.genBtn.clicked.connect(self.genPassword)
+        self.ui.saveBtn.clicked.connect(self.savePassword)
 
     def genPassword(self):
         passwordOptions = ""
-        if self.ui.lowerCaseCheck.isChecked():
-            passwordOptions += ascii_lowercase
-        if self.ui.upperCaseCheck.isChecked():
-            passwordOptions += ascii_uppercase
-        if self.ui.numbersCheck.isChecked():
-            passwordOptions += digits
-        if self.ui.numbersCheck.isChecked():
-            passwordOptions += punctuation
-        print(passwordOptions)
+        if self.ui.lowerCaseCheck.isChecked() or self.ui.upperCaseCheck.isChecked() or self.ui.numbersCheck.isChecked() or self.ui.specialCharsCheck.isChecked():
+            if self.ui.lowerCaseCheck.isChecked():
+                passwordOptions += ascii_lowercase
+            if self.ui.upperCaseCheck.isChecked():
+                passwordOptions += ascii_uppercase
+            if self.ui.numbersCheck.isChecked():
+                passwordOptions += digits
+            if self.ui.specialCharsCheck.isChecked():
+                passwordOptions += punctuation
+            lengths = [i for i in range(8, 17)]
+            passLength = random.choice(lengths)
+            self.password = ""
+            for i in range(0, passLength):
+                self.password += random.choice(passwordOptions)
+            self.ui.generatedPassLabel.setText(self.password)
+            self.ui.generatedPassLabel.setAlignment(QtCore.Qt.AlignCenter)
+            self.ui.nameOfAccountEdit.setEnabled(True)
+            self.ui.usernameEdit.setEnabled(True)
+            self.ui.saveBtn.setEnabled(True)
+        else:
+            Alert("Error", QtWidgets.QMessageBox.Critical, "No options to generate password from")
+        # self.ui.generatedPassLabel.setText
+
+    def savePassword(self):
+        if self.ui.nameOfAccountEdit.text() or self.ui.usernameEdit.text() == "":
+            Alert("Error", QtWidgets.QMessageBox.Critical,
+                  "Account name or Username has been left empty")
+        else:
+            print(self.ui.nameOfAccountEdit.text() and self.ui.usernameEdit.text())
 
 
 def getPathToDesktop():
