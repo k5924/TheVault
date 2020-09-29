@@ -26,7 +26,7 @@ class MainWindow(QtWidgets.QWidget):
 
     def createVaultFiles(self):
         key = get_random_bytes(32)  # 32 bytes is 256 bits
-        data = b''  # basic data for file to encrypt
+        data = ''.encode('utf-8')  # basic data for file to encrypt
         desktopPath = getPathToDesktop()    # gets path to desktop
         keyFile = open(desktopPath + "\\key.bin", "wb")
         keyFile.write(key)  # writes encryption key to file
@@ -67,7 +67,7 @@ class MainWindow(QtWidgets.QWidget):
         else:
             # exception handling
             try:
-                getData(self.keyPath, self.vaultPath)
+                key, iv, data = getData(self.keyPath, self.vaultPath)
                 # display new window for generating password or viewing accounts
                 self.newWindow = generatePasswordWin()
                 self.newWindow.show()   # show new window
@@ -103,20 +103,30 @@ class generatePasswordWin(QtWidgets.QWidget):
             for i in range(0, passLength):
                 self.password += random.choice(passwordOptions)
             self.ui.generatedPassLabel.setText(self.password)
-            self.ui.generatedPassLabel.setAlignment(QtCore.Qt.AlignCenter)
+            # self.ui.generatedPassLabel.setAlignment(QtCore.Qt.AlignCenter)
             self.ui.nameOfAccountEdit.setEnabled(True)
             self.ui.usernameEdit.setEnabled(True)
             self.ui.saveBtn.setEnabled(True)
         else:
             Alert("Error", QtWidgets.QMessageBox.Critical, "No options to generate password from")
-        # self.ui.generatedPassLabel.setText
 
     def savePassword(self):
-        if self.ui.nameOfAccountEdit.text() or self.ui.usernameEdit.text() == "":
+        if (self.ui.nameOfAccountEdit.text() == (None or "")) or (self.ui.usernameEdit.text() == (None or "")):
             Alert("Error", QtWidgets.QMessageBox.Critical,
                   "Account name or Username has been left empty")
-        else:
-            print(self.ui.nameOfAccountEdit.text() and self.ui.usernameEdit.text())
+        else:  # displays any error message if the user input fields are empty or incorrectly entered
+            if (self.ui.nameOfAccountEdit.text()[0] == " ") or (self.ui.nameOfAccountEdit.text()[-1] == " "):
+                Alert("Error", QtWidgets.QMessageBox.Critical,
+                      "Please remove spaces from the beginning or end of Account name")
+            elif " " in self.ui.usernameEdit.text():
+                Alert("Error", QtWidgets.QMessageBox.Critical,
+                      "Please remove spaces from Username")
+            else:
+                nameOfAccount = self.ui.nameOfAccountEdit.text()
+                username = self.ui.usernameEdit.text()
+                password = self.ui.generatedPassLabel.text()
+                writeData(nameOfAccount, username, password)
+                Alert("Process Completed", QtWidgets.QMessageBox.Information, "Account saved")
 
 
 def getPathToDesktop():
@@ -149,10 +159,23 @@ def getData(pathToKey, pathToVault):    # allows me to access Paths throughout d
     readVaultFile.close()
     readKeyFile = open(KEYPATH, 'rb')
     key = readKeyFile.read()
+    readKeyFile.close()
     cipher = AES.new(key, AES.MODE_CBC, iv=iv)  # Setup cipher
     # Decrypt and then up-pad the result
     data = unpad(cipher.decrypt(ciphered_data), AES.block_size)
-    return data
+    return key, iv, data
+
+
+def writeData(nameOfAccount, username, password):   # writes name of account, username and password to vaultFile
+    global KEYPATH, VAULTPATH
+    key, iv, data = getData(KEYPATH, VAULTPATH)
+    data += ("{},{},{}\n".format(nameOfAccount, username, password)).encode('utf-8')
+    cipher = AES.new(key, AES.MODE_CBC, iv=iv)
+    ciphered_data = cipher.encrypt(pad(data, AES.block_size))
+    vaultFile = open(VAULTPATH, "wb")     # creates vault file
+    vaultFile.write(cipher.iv)
+    vaultFile.write(ciphered_data)
+    vaultFile.close()
 
 
 if __name__ == "__main__":
