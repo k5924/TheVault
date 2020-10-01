@@ -5,6 +5,7 @@ from platform import system
 from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 from startPage import Ui_startPage
 from genPassPage import Ui_passwordGen
+from allAccountsPage import Ui_allAccounts
 from PyQt5 import QtWidgets, QtCore
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
@@ -85,6 +86,7 @@ class generatePasswordWin(QtWidgets.QWidget):
         self.ui.setupUi(self)
         self.ui.genBtn.clicked.connect(self.genPassword)
         self.ui.saveBtn.clicked.connect(self.savePassword)
+        self.ui.viewAccountsTab.clicked.connect(self.openAccountsPage)
 
     def genPassword(self):
         passwordOptions = ""
@@ -99,11 +101,10 @@ class generatePasswordWin(QtWidgets.QWidget):
                 passwordOptions += punctuation
             lengths = [i for i in range(8, 17)]
             passLength = random.choice(lengths)
-            self.password = ""
+            password = ""
             for i in range(0, passLength):
-                self.password += random.choice(passwordOptions)
-            self.ui.generatedPassLabel.setText(self.password)
-            # self.ui.generatedPassLabel.setAlignment(QtCore.Qt.AlignCenter)
+                password += random.choice(passwordOptions)
+            self.ui.generatedPassLabel.setText(password)
             self.ui.nameOfAccountEdit.setEnabled(True)
             self.ui.usernameEdit.setEnabled(True)
             self.ui.saveBtn.setEnabled(True)
@@ -127,6 +128,31 @@ class generatePasswordWin(QtWidgets.QWidget):
                 password = self.ui.generatedPassLabel.text()
                 writeData(nameOfAccount, username, password)
                 Alert("Process Completed", QtWidgets.QMessageBox.Information, "Account saved")
+                # the code below resets that generatedPassLabel, nameOfAccount input and username input after saving
+                self.ui.generatedPassLabel.setText("")
+                self.ui.nameOfAccountEdit.setText("")
+                self.ui.usernameEdit.setText("")
+                self.ui.nameOfAccountEdit.setEnabled(False)
+                self.ui.usernameEdit.setEnabled(False)
+
+    def openAccountsPage(self):  # opens window to view all accounts
+        self.newWindow = allAccountsWin()
+        self.newWindow.show()   # show new window
+        self.hide()  # close old window
+
+
+class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ui = Ui_allAccounts()
+        self.ui.setupUi(self)
+        # button which links to generate password window
+        self.ui.genPassTab.clicked.connect(self.openGeneratePassTab)
+
+    def openGeneratePassTab(self):  # open generate password window
+        self.newWindow = generatePasswordWin()
+        self.newWindow.show()   # show new window
+        self.hide()  # close old window
 
 
 def getPathToDesktop():

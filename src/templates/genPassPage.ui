@@ -298,8 +298,7 @@ background-color: rgb(2, 13, 165);</string>
      </font>
     </property>
     <property name="styleSheet">
-     <string notr="true">color: rgb(2, 13, 165);
-border:1px, red;</string>
+     <string notr="true">color: rgb(2, 13, 165);</string>
     </property>
     <property name="text">
      <string/>
@@ -326,43 +325,8 @@ border:1px, red;</string>
       <pointsize>14</pointsize>
      </font>
     </property>
-   </widget>
-   <widget class="QLabel" name="nameOfAccountLbl">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>80</y>
-      <width>171</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Microsoft YaHei UI</family>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
+    <property name="placeholderText">
      <string>Name of account</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="usernameLbl">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>140</y>
-      <width>101</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <family>Microsoft YaHei UI</family>
-      <pointsize>14</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Username</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="usernameEdit">
@@ -382,6 +346,9 @@ border:1px, red;</string>
       <family>Microsoft YaHei UI</family>
       <pointsize>14</pointsize>
      </font>
+    </property>
+    <property name="placeholderText">
+     <string>Username</string>
     </property>
    </widget>
    <widget class="QPushButton" name="saveBtn">
