@@ -128,6 +128,11 @@ class generatePasswordWin(QtWidgets.QWidget):
                 password = self.ui.generatedPassLabel.text()
                 writeData(nameOfAccount, username, password)
                 Alert("Process Completed", QtWidgets.QMessageBox.Information, "Account saved")
+                # reset check boxes after saving accounts
+                self.ui.lowerCaseCheck.setChecked(False)
+                self.ui.upperCaseCheck.setChecked(False)
+                self.ui.numbersCheck.setChecked(False)
+                self.ui.specialCharsCheck.setChecked(False)
                 # the code below resets that generatedPassLabel, nameOfAccount input and username input after saving
                 self.ui.generatedPassLabel.setText("")
                 self.ui.nameOfAccountEdit.setText("")
