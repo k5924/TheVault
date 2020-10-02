@@ -6,7 +6,7 @@ from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 from startPage import Ui_startPage
 from genPassPage import Ui_passwordGen
 from allAccountsPage import Ui_allAccounts
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets, QtCore, QtGui
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
@@ -153,11 +153,42 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.ui.setupUi(self)
         # button which links to generate password window
         self.ui.genPassTab.clicked.connect(self.openGeneratePassTab)
+        self.loadAccounts()
+        self.ui.accountsTable.itemDoubleClicked.connect(self.viewItem)
 
     def openGeneratePassTab(self):  # open generate password window
         self.newWindow = generatePasswordWin()
         self.newWindow.show()   # show new window
         self.hide()  # close old window
+
+    def loadAccounts(self):  # added feature to read accounts from file
+        self.ui.accountsTable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
+        global KEYPATH, VAULTPATH
+        key, iv, data = getData(KEYPATH, VAULTPATH)
+        data = data.decode('utf-8')
+        if data != "":
+            row = data.split('\n')
+            accounts = {}
+            i = 0
+            for value in row:
+                if value != "":
+                    accounts[i] = value.split(',')
+                    i += 1
+            for n, key in enumerate(sorted(accounts.keys())):  # displays code in table in window
+                self.ui.accountsTable.insertRow(n)
+                newitem = QtWidgets.QTableWidgetItem(accounts[key][0])
+                viewLabel = QtWidgets.QTableWidgetItem("View")
+                viewLabel.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.ui.accountsTable.setItem(n, 0, newitem)
+                self.ui.accountsTable.setItem(n, 1, viewLabel)
+                viewLabel.setBackground(QtGui.QColor(210, 210, 210))
+                viewLabel.setFlags(viewLabel.flags() ^ QtCore.Qt.ItemIsEditable)
+        else:   # else disables table
+            self.ui.accountsTable.setEnabled(False)
+
+    def viewItem(self):
+        if (self.ui.accountsTable.currentItem().text() == "View") and (self.ui.accountsTable.currentColumn() == 1):
+            print("Working")
 
 
 def getPathToDesktop():

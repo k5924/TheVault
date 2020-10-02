@@ -190,6 +190,86 @@ border: .5 solid;</string>
      </size>
     </property>
    </widget>
+   <widget class="QTableWidget" name="accountsTable">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>71</y>
+      <width>680</width>
+      <height>380</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Open Sans</family>
+      <pointsize>18</pointsize>
+      <weight>50</weight>
+      <italic>false</italic>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">border: .5 solid;
+font: 18pt &quot;Open Sans&quot;;</string>
+    </property>
+    <property name="horizontalScrollBarPolicy">
+     <enum>Qt::ScrollBarAlwaysOff</enum>
+    </property>
+    <property name="sizeAdjustPolicy">
+     <enum>QAbstractScrollArea::AdjustToContents</enum>
+    </property>
+    <property name="alternatingRowColors">
+     <bool>false</bool>
+    </property>
+    <attribute name="horizontalHeaderDefaultSectionSize">
+     <number>340</number>
+    </attribute>
+    <attribute name="horizontalHeaderHighlightSections">
+     <bool>true</bool>
+    </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>false</bool>
+    </attribute>
+    <column>
+     <property name="text">
+      <string>Name of account</string>
+     </property>
+     <property name="font">
+      <font>
+       <family>Open Sans</family>
+       <pointsize>18</pointsize>
+      </font>
+     </property>
+     <property name="background">
+      <color>
+       <red>240</red>
+       <green>240</green>
+       <blue>240</blue>
+      </color>
+     </property>
+    </column>
+    <column>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="font">
+      <font>
+       <family>Open Sans</family>
+       <pointsize>18</pointsize>
+      </font>
+     </property>
+     <property name="background">
+      <color>
+       <red>240</red>
+       <green>240</green>
+       <blue>240</blue>
+      </color>
+     </property>
+    </column>
+   </widget>
   </widget>
   <widget class="QPushButton" name="importBtn">
    <property name="geometry">
