@@ -6,6 +6,7 @@ from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 from startPage import Ui_startPage
 from genPassPage import Ui_passwordGen
 from allAccountsPage import Ui_allAccounts
+from AddAccountPage import Ui_addAccount
 from PyQt5 import QtWidgets, QtCore, QtGui
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
@@ -155,6 +156,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.ui.genPassTab.clicked.connect(self.openGeneratePassTab)
         self.loadAccounts()
         self.ui.accountsTable.itemDoubleClicked.connect(self.viewItem)
+        self.ui.addAccountBtn.clicked.connect(self.addAccountManually)
 
     def openGeneratePassTab(self):  # open generate password window
         self.newWindow = generatePasswordWin()
@@ -189,6 +191,47 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
     def viewItem(self):
         if (self.ui.accountsTable.currentItem().text() == "View") and (self.ui.accountsTable.currentColumn() == 1):
             print("Working")
+
+    def addAccountManually(self):
+        self.newWindow2 = addAccountWin()
+        self.newWindow2.show()   # show new window
+        self.hide()
+
+
+class addAccountWin(QtWidgets.QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ui = Ui_addAccount()
+        self.ui.setupUi(self)
+        self.ui.cancelBtn.clicked.connect(self.goBack)
+        self.ui.saveBtn.clicked.connect(self.saveAccount)
+
+    def goBack(self):
+        self.newWindow = allAccountsWin()
+        self.newWindow.show()
+        self.hide()
+
+    def saveAccount(self):
+        if (self.ui.nameOfAccountEdit.text() == (None or "")) or (self.ui.usernameEdit.text() == (None or "")) or (self.ui.passwordEdit.text() == (None or "")):
+            Alert("Error", QtWidgets.QMessageBox.Critical,
+                  "Account name, Username or the Password field has been left empty")
+        else:  # displays any error message if the user input fields are empty or incorrectly entered
+            if (self.ui.nameOfAccountEdit.text()[0] == " ") or (self.ui.nameOfAccountEdit.text()[-1] == " "):
+                Alert("Error", QtWidgets.QMessageBox.Critical,
+                      "Please remove spaces from the beginning or end of Account name")
+            elif " " in self.ui.usernameEdit.text():
+                Alert("Error", QtWidgets.QMessageBox.Critical,
+                      "Please remove spaces from Username")
+            elif " " in self.ui.passwordEdit.text():
+                Alert("Error", QtWidgets.QMessageBox.Critical,
+                      "Please remove spaces from Password")
+            else:
+                nameOfAccount = self.ui.nameOfAccountEdit.text()
+                username = self.ui.usernameEdit.text()
+                password = self.ui.passwordEdit.text()
+                writeData(nameOfAccount, username, password)
+                Alert("Process Completed", QtWidgets.QMessageBox.Information, "Account saved")
+                self.goBack()
 
 
 def getPathToDesktop():
