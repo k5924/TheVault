@@ -157,6 +157,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.loadAccounts()
         self.ui.accountsTable.itemDoubleClicked.connect(self.viewItem)
         self.ui.addAccountBtn.clicked.connect(self.addAccountManually)
+        self.ui.searchBox.returnPressed.connect(self.searchData)
 
     def openGeneratePassTab(self):  # open generate password window
         self.newWindow = generatePasswordWin()
@@ -196,6 +197,11 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.newWindow2 = addAccountWin()
         self.newWindow2.show()   # show new window
         self.hide()
+
+    def searchData(self):
+        if self.ui.searchBox.text() != (None or ""):
+            # term = self.ui.searchBox.text()
+            print("Search box working")
 
 
 class addAccountWin(QtWidgets.QWidget):
