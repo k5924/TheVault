@@ -7,6 +7,7 @@ from startPage import Ui_startPage
 from genPassPage import Ui_passwordGen
 from allAccountsPage import Ui_allAccounts
 from AddAccountPage import Ui_addAccount
+from viewAccountPage import Ui_viewAccount
 from PyQt5 import QtWidgets, QtCore, QtGui
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
@@ -194,11 +195,13 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
 
     def viewItem(self):
         if (self.ui.accountsTable.currentItem().text() == "View") and (self.ui.accountsTable.currentColumn() == 1):
-            print("Working")
+            self.newWindow = viewAccountWin()
+            self.newWindow.show()
+            self.hide()
 
     def addAccountManually(self):
-        self.newWindow2 = addAccountWin()
-        self.newWindow2.show()   # show new window
+        self.newWindow = addAccountWin()
+        self.newWindow.show()   # show new window
         self.hide()
 
     def searchAccounts(self):
@@ -259,6 +262,19 @@ class addAccountWin(QtWidgets.QWidget):
                 writeData(nameOfAccount, username, password)
                 Alert("Process Completed", QtWidgets.QMessageBox.Information, "Account saved")
                 self.goBack()
+
+
+class viewAccountWin(QtWidgets.QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ui = Ui_viewAccount()
+        self.ui.setupUi(self)
+        self.ui.backBtn.clicked.connect(self.goBack)
+
+    def goBack(self):
+        self.newWindow = allAccountsWin()
+        self.newWindow.show()
+        self.hide()
 
 
 def getPathToDesktop():
