@@ -8,17 +8,17 @@
 
 > If you are compiling the code from source then ensure that python is installed on the machine with pip added to Path in the environment variables on windows. Through pip Run:
 <pre><code>pip install pyqt5 pycryptodome</pre></code>
-If pycryptodome fails to install, try running:
+> If pycryptodome fails to install, try running:
 <pre><code>pip uninstall crypto cryptography pycrypto pycryptodomex</pre></code>
-Then re-run:
+> Then re-run:
 <pre><code>pip install pycryptodome</pre></code>
-This should install pycryptodome and PyQt5 for an end user to modify how the software works.<br><br>
-Additionally, you could run:
+> This should install pycryptodome and PyQt5 for an end user to modify how the software works.<br><br>
+>  Additionally, you could run:
 <pre><code>pip install pyqt5-tools</pre></code>
-This will give you PyQt tools such as designer which will allow you to create the user interface via a drag an drop program.<br>
-To export the interface that you have created in Qt Designer as a python file, Run:
+> This will give you PyQt tools such as designer which will allow you to create the user interface via a drag an drop program.<br>
+> To export the interface that you have created in Qt Designer as a python file, Run:
 <pre><code>pyuic5 -o "nameOfOutputFile.py" "path/to/ui/file.ui"</pre></code>
-Or to get the interface you made as a python file that you want to run without another file to setup the interface run:
+> Or to get the interface you made as a python file that you want to run without another file to setup the interface run:
 <pre><code>pyuic5 -x -o "nameOfOutputFile.py" "path/to/ui/file.ui"</pre></code>
 
 <p align="left">
