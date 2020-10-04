@@ -155,7 +155,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         # button which links to generate password window
         self.ui.genPassTab.clicked.connect(self.openGeneratePassTab)
         self.loadAccounts()
-        self.ui.accountsTable.itemDoubleClicked.connect(self.viewItem)
+        self.ui.accountsTable.itemClicked.connect(self.viewItem)
         self.ui.addAccountBtn.clicked.connect(self.addAccountManually)
         self.ui.searchBox.returnPressed.connect(self.searchData)
 
@@ -169,17 +169,19 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         global KEYPATH, VAULTPATH
         key, iv, data = getData(KEYPATH, VAULTPATH)
         data = data.decode('utf-8')
+        self.count = 1
         if data != "":
             row = data.split('\n')
-            accounts = {}
+            self.accounts = {}
             i = 0
             for value in row:
                 if value != "":
-                    accounts[i] = value.split(',')
+                    self.accounts[i] = value.split(',')
                     i += 1
-            for n, key in enumerate(sorted(accounts.keys())):  # displays code in table in window
+            self.ui.accountsTable.setRowCount(0)
+            for n, key in enumerate(sorted(self.accounts.keys())):  # displays code in table in window
                 self.ui.accountsTable.insertRow(n)
-                newitem = QtWidgets.QTableWidgetItem(accounts[key][0])
+                newitem = QtWidgets.QTableWidgetItem(self.accounts[key][0])
                 viewLabel = QtWidgets.QTableWidgetItem("View")
                 viewLabel.setTextAlignment(QtCore.Qt.AlignCenter)
                 self.ui.accountsTable.setItem(n, 0, newitem)
@@ -188,6 +190,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
                 viewLabel.setFlags(viewLabel.flags() ^ QtCore.Qt.ItemIsEditable)
         else:   # else disables table
             self.ui.accountsTable.setEnabled(False)
+            self.ui.searchBox.setEnabled(False)
 
     def viewItem(self):
         if (self.ui.accountsTable.currentItem().text() == "View") and (self.ui.accountsTable.currentColumn() == 1):
@@ -199,9 +202,27 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.hide()
 
     def searchData(self):
-        if self.ui.searchBox.text() != (None or ""):
-            # term = self.ui.searchBox.text()
-            print("Search box working")
+        term = self.ui.searchBox.text()
+        if term != (None or ""):
+            searchedAccounts = self.accounts.copy()
+            self.count -= 1
+            self.ui.accountsTable.setRowCount(0)
+            for n, key in enumerate(sorted(self.accounts.keys())):  # displays code in table in window
+                if not(term.lower() in self.accounts[key][0].lower()):
+                    searchedAccounts.pop(key)
+                    print(self.accounts)
+            for n, key in enumerate(sorted(searchedAccounts.keys())):
+                self.ui.accountsTable.insertRow(n)
+                newitem = QtWidgets.QTableWidgetItem(searchedAccounts[key][0])
+                viewLabel = QtWidgets.QTableWidgetItem("View")
+                viewLabel.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.ui.accountsTable.setItem(n, 0, newitem)
+                self.ui.accountsTable.setItem(n, 1, viewLabel)
+                viewLabel.setBackground(QtGui.QColor(210, 210, 210))
+                viewLabel.setFlags(viewLabel.flags() ^ QtCore.Qt.ItemIsEditable)
+        else:
+            if self.count <= 0:
+                self.loadAccounts()
 
 
 class addAccountWin(QtWidgets.QWidget):
