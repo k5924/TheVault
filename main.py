@@ -157,7 +157,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.loadAccounts()
         self.ui.accountsTable.itemClicked.connect(self.viewItem)
         self.ui.addAccountBtn.clicked.connect(self.addAccountManually)
-        self.ui.searchBox.returnPressed.connect(self.searchData)
+        self.ui.searchBox.returnPressed.connect(self.searchAccounts)
 
     def openGeneratePassTab(self):  # open generate password window
         self.newWindow = generatePasswordWin()
@@ -169,7 +169,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         global KEYPATH, VAULTPATH
         key, iv, data = getData(KEYPATH, VAULTPATH)
         data = data.decode('utf-8')
-        self.count = 1
+        self.count = 1  # count for resetting all accounts view
         if data != "":
             row = data.split('\n')
             self.accounts = {}
@@ -178,7 +178,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
                 if value != "":
                     self.accounts[i] = value.split(',')
                     i += 1
-            self.ui.accountsTable.setRowCount(0)
+            self.ui.accountsTable.setRowCount(0)    # removes all data in table before making table
             for n, key in enumerate(sorted(self.accounts.keys())):  # displays code in table in window
                 self.ui.accountsTable.insertRow(n)
                 newitem = QtWidgets.QTableWidgetItem(self.accounts[key][0])
@@ -201,16 +201,16 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.newWindow2.show()   # show new window
         self.hide()
 
-    def searchData(self):
+    def searchAccounts(self):
         term = self.ui.searchBox.text()
         if term != (None or ""):
-            searchedAccounts = self.accounts.copy()
-            self.count -= 1
-            self.ui.accountsTable.setRowCount(0)
+            searchedAccounts = self.accounts.copy()  # copy sets values to new variable to edit
+            self.count -= 1  # decreases count for table to reset when nothing in searchBox
+            self.ui.accountsTable.setRowCount(0)    # deletes tables contents
             for n, key in enumerate(sorted(self.accounts.keys())):  # displays code in table in window
                 if not(term.lower() in self.accounts[key][0].lower()):
-                    searchedAccounts.pop(key)
-                    print(self.accounts)
+                    searchedAccounts.pop(key)   # removes values not in search
+            # code below works just like in loadAccounts but with search terms
             for n, key in enumerate(sorted(searchedAccounts.keys())):
                 self.ui.accountsTable.insertRow(n)
                 newitem = QtWidgets.QTableWidgetItem(searchedAccounts[key][0])
@@ -220,8 +220,8 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
                 self.ui.accountsTable.setItem(n, 1, viewLabel)
                 viewLabel.setBackground(QtGui.QColor(210, 210, 210))
                 viewLabel.setFlags(viewLabel.flags() ^ QtCore.Qt.ItemIsEditable)
-        else:
-            if self.count <= 0:
+        else:   # if search box is empty
+            if self.count <= 0:  # comparison to make sure you only run loadAccounts after a search
                 self.loadAccounts()
 
 
