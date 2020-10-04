@@ -13,7 +13,7 @@
 > Then re-run:
 <pre><code>pip install pycryptodome</pre></code>
 > This should install pycryptodome and PyQt5 for an end user to modify how the software works.<br><br>
->  Additionally, you could run:
+> Additionally, you could run:
 <pre><code>pip install pyqt5-tools</pre></code>
 > This will give you PyQt tools such as designer which will allow you to create the user interface via a drag an drop program.<br>
 > To export the interface that you have created in Qt Designer as a python file, Run:
