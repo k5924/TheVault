@@ -76,7 +76,7 @@ class MainWindow(QtWidgets.QWidget):
                 self.newWindow = generatePasswordWin()
                 self.newWindow.show()   # show new window
                 self.hide()  # close old window
-            except ValueError:
+            except (ValueError, FileNotFoundError) as e:
                 Alert("Error", QtWidgets.QMessageBox.Critical, "Incorrect files selected")
                 # Alert function to show error message
 
@@ -287,11 +287,25 @@ class viewAccountWin(QtWidgets.QWidget):
         self.ui.usernameLbl.adjustSize()
         self.ui.passwordLbl.setText(VIEWEDITEM[2])
         self.ui.passwordLbl.adjustSize()
+        self.ui.copyUserBtn.clicked.connect(self.copyUsername)
+        self.ui.copyPassBtn.clicked.connect(self.copyPassword)
 
     def goBack(self):
         self.newWindow = allAccountsWin()
         self.newWindow.show()
         self.hide()
+
+    def copyUsername(self):
+        cb = QtGui.QGuiApplication.clipboard()
+        cb.setText(self.ui.usernameLbl.text(), mode=cb.Clipboard)
+        Alert("Confirmed", QtWidgets.QMessageBox.Information,
+              "Username copied to clipboard")
+
+    def copyPassword(self):
+        cb = QtGui.QGuiApplication.clipboard()
+        cb.setText(self.ui.passwordLbl.text(), mode=cb.Clipboard)
+        Alert("Confirmed", QtWidgets.QMessageBox.Information,
+              "Password copied to clipboard")
 
 
 def getPathToDesktop():
