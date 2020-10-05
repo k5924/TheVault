@@ -13,7 +13,8 @@ from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
-global KEYPATH, VAULTPATH   # global variabls to store paths to vault and key file
+# global variabls to store paths to vault and key file
+global KEYPATH, VAULTPATH, VIEWEDITEM
 
 
 class MainWindow(QtWidgets.QWidget):
@@ -166,8 +167,9 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.hide()  # close old window
 
     def loadAccounts(self):  # added feature to read accounts from file
-        self.ui.accountsTable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         global KEYPATH, VAULTPATH
+        self.searchedAccounts = {}
+        self.ui.accountsTable.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         key, iv, data = getData(KEYPATH, VAULTPATH)
         data = data.decode('utf-8')
         self.count = 1  # count for resetting all accounts view
@@ -194,7 +196,15 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
             self.ui.searchBox.setEnabled(False)
 
     def viewItem(self):
+        global VIEWEDITEM
         if (self.ui.accountsTable.currentItem().text() == "View") and (self.ui.accountsTable.currentColumn() == 1):
+            row = self.ui.accountsTable.currentRow()
+            if not(self.searchedAccounts):   # checks if searchedAccounts is empty
+                VIEWEDITEM = self.accounts[row]
+            else:
+                for n, key in enumerate(sorted(self.searchedAccounts.keys())):
+                    if row == n:
+                        VIEWEDITEM = self.accounts[key]
             self.newWindow = viewAccountWin()
             self.newWindow.show()
             self.hide()
@@ -207,16 +217,16 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
     def searchAccounts(self):
         term = self.ui.searchBox.text()
         if term != (None or ""):
-            searchedAccounts = self.accounts.copy()  # copy sets values to new variable to edit
+            self.searchedAccounts = self.accounts.copy()  # copy sets values to new variable to edit
             self.count -= 1  # decreases count for table to reset when nothing in searchBox
             self.ui.accountsTable.setRowCount(0)    # deletes tables contents
             for n, key in enumerate(sorted(self.accounts.keys())):  # displays code in table in window
                 if not(term.lower() in self.accounts[key][0].lower()):
-                    searchedAccounts.pop(key)   # removes values not in search
+                    self.searchedAccounts.pop(key)   # removes values not in search
             # code below works just like in loadAccounts but with search terms
-            for n, key in enumerate(sorted(searchedAccounts.keys())):
+            for n, key in enumerate(sorted(self.searchedAccounts.keys())):
                 self.ui.accountsTable.insertRow(n)
-                newitem = QtWidgets.QTableWidgetItem(searchedAccounts[key][0])
+                newitem = QtWidgets.QTableWidgetItem(self.searchedAccounts[key][0])
                 viewLabel = QtWidgets.QTableWidgetItem("View")
                 viewLabel.setTextAlignment(QtCore.Qt.AlignCenter)
                 self.ui.accountsTable.setItem(n, 0, newitem)
@@ -225,6 +235,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
                 viewLabel.setFlags(viewLabel.flags() ^ QtCore.Qt.ItemIsEditable)
         else:   # if search box is empty
             if self.count <= 0:  # comparison to make sure you only run loadAccounts after a search
+                self.searchedAccounts = {}
                 self.loadAccounts()
 
 
@@ -270,6 +281,12 @@ class viewAccountWin(QtWidgets.QWidget):
         self.ui = Ui_viewAccount()
         self.ui.setupUi(self)
         self.ui.backBtn.clicked.connect(self.goBack)
+        self.ui.nameOfAccountLbl.setText(VIEWEDITEM[0])
+        self.ui.nameOfAccountLbl.adjustSize()
+        self.ui.usernameLbl.setText(VIEWEDITEM[1])
+        self.ui.usernameLbl.adjustSize()
+        self.ui.passwordLbl.setText(VIEWEDITEM[2])
+        self.ui.passwordLbl.adjustSize()
 
     def goBack(self):
         self.newWindow = allAccountsWin()
