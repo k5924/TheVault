@@ -8,6 +8,7 @@ from genPassPage import Ui_passwordGen
 from allAccountsPage import Ui_allAccounts
 from AddAccountPage import Ui_addAccount
 from viewAccountPage import Ui_viewAccount
+from changePassPage import Ui_changePass
 from PyQt5 import QtWidgets, QtCore, QtGui
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
@@ -289,6 +290,7 @@ class viewAccountWin(QtWidgets.QWidget):
         self.ui.passwordLbl.adjustSize()
         self.ui.copyUserBtn.clicked.connect(self.copyUsername)
         self.ui.copyPassBtn.clicked.connect(self.copyPassword)
+        self.ui.changePassBtn.clicked.connect(self.changePassword)
 
     def goBack(self):
         self.newWindow = allAccountsWin()
@@ -306,6 +308,26 @@ class viewAccountWin(QtWidgets.QWidget):
         cb.setText(self.ui.passwordLbl.text(), mode=cb.Clipboard)
         Alert("Confirmed", QtWidgets.QMessageBox.Information,
               "Password copied to clipboard")
+
+    def changePassword(self):
+        self.newWindow = changePassWin()
+        self.newWindow.show()
+        self.hide()
+
+
+class changePassWin(QtWidgets.QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ui = Ui_changePass()
+        self.ui.setupUi(self)
+        self.ui.nameOfAccountLbl.setText(VIEWEDITEM[0])
+        self.ui.usernameLbl.setText(VIEWEDITEM[1])
+        self.ui.cancelBtn.clicked.connect(self.goBack)
+
+    def goBack(self):
+        self.newWindow = viewAccountWin()
+        self.newWindow.show()
+        self.hide()
 
 
 def getPathToDesktop():
