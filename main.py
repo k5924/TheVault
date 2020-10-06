@@ -323,11 +323,38 @@ class changePassWin(QtWidgets.QWidget):
         self.ui.nameOfAccountLbl.setText(VIEWEDITEM[0])
         self.ui.usernameLbl.setText(VIEWEDITEM[1])
         self.ui.cancelBtn.clicked.connect(self.goBack)
+        self.ui.changePassBtn.clicked.connect(self.changePassword)
 
     def goBack(self):
         self.newWindow = viewAccountWin()
         self.newWindow.show()
         self.hide()
+
+    def changePassword(self):
+        if (self.ui.passwordEdit.text() == (None or "")) or (self.ui.confirmPassEdit.text() == (None or "")):
+            Alert("Error", QtWidgets.QMessageBox.Critical,
+                  "One or Both of the password fields are empty")
+        else:
+            if self.ui.passwordEdit.text() != self.ui.confirmPassEdit.text():
+                Alert("Error", QtWidgets.QMessageBox.Critical, "Passwords dont match")
+            elif " " in (self.ui.passwordEdit.text() or self.ui.confirmPassEdit.text()):
+                Alert("Error", QtWidgets.QMessageBox.Critical, "Remove spaces from password fields")
+            else:
+                key, iv, data = getData(KEYPATH, VAULTPATH)
+                data = data.decode('utf-8')
+                row = data.split('\n')
+                accounts = []
+                for value in row:
+                    if value != "":
+                        # stores accounts as nested lists seperated by value
+                        accounts.append(value.split(','))
+                for i in range(len(accounts)):
+                    if accounts[i] == VIEWEDITEM:
+                        VIEWEDITEM[2] = self.ui.passwordEdit.text()  # updates the item being viewed
+                        accounts[i] = VIEWEDITEM    # updates the item in the accounts nested list
+                updateAccounts(accounts)    # calls updateAccounts
+                Alert("Confirmed", QtWidgets.QMessageBox.Information, "Password Changed")
+                self.goBack()   # go to view account page after password is changed successfully
 
 
 def getPathToDesktop():
@@ -373,6 +400,24 @@ def writeData(nameOfAccount, username, password):   # writes name of account, us
     data += ("{},{},{}\n".format(nameOfAccount, username, password)).encode('utf-8')
     cipher = AES.new(key, AES.MODE_CBC, iv=iv)
     ciphered_data = cipher.encrypt(pad(data, AES.block_size))
+    vaultFile = open(VAULTPATH, "wb")     # creates vault file
+    vaultFile.write(cipher.iv)
+    vaultFile.write(ciphered_data)
+    vaultFile.close()
+
+
+def updateAccounts(data):
+    global KEYPATH, VAULTPATH
+    key, iv, oldData = getData(KEYPATH, VAULTPATH)
+    accounts = []
+    for value in data:
+        row = ','.join(value)
+        accounts.append(row)
+    newData = b''
+    for line in accounts:
+        newData += ("{}\n".format(line)).encode('utf-8')
+    cipher = AES.new(key, AES.MODE_CBC, iv=iv)
+    ciphered_data = cipher.encrypt(pad(newData, AES.block_size))
     vaultFile = open(VAULTPATH, "wb")     # creates vault file
     vaultFile.write(cipher.iv)
     vaultFile.write(ciphered_data)
