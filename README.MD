@@ -21,10 +21,5 @@ To export the interface that you have created in Qt Designer as a python file, R
 > Or to get the interface you made as a python file that you want to run without another file to setup the interface run:
 <pre><code>pyuic5 -x -o "nameOfOutputFile.py" "path/to/ui/file.ui"</pre></code>
 
-<p align="left">
-<h3 align="left">Connect with me:</h3>
-<a href="https://linkedin.com/in/kbhatti5924" target="blank"><img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/linkedin.svg" alt="kbhatti5924" height="30" width="40" /></a>
-</p>
-
 <h3 align="left">Languages and Tools:</h3>
 <p align="left"> <a href="https://www.python.org" target="_blank"> <img src="https://devicons.github.io/devicon/devicon.git/icons/python/python-original.svg" alt="python" width="40" height="40"/> </a> <a href="https://www.riverbankcomputing.com/software/pyqt/" target="_blank"> <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Qt_logo_2016.svg" alt="qt" width="40" height="40"/> </a> </p>
