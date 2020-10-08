@@ -9,6 +9,7 @@ from allAccountsPage import Ui_allAccounts
 from AddAccountPage import Ui_addAccount
 from viewAccountPage import Ui_viewAccount
 from changePassPage import Ui_changePass
+from importAccountsPage import Ui_importAccounts
 from PyQt5 import QtWidgets, QtCore, QtGui
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
@@ -161,6 +162,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.ui.accountsTable.itemClicked.connect(self.viewItem)
         self.ui.addAccountBtn.clicked.connect(self.addAccountManually)
         self.ui.searchBox.returnPressed.connect(self.searchAccounts)
+        self.ui.importBtn.clicked.connect(self.importAccounts)
 
     def openGeneratePassTab(self):  # open generate password window
         self.newWindow = generatePasswordWin()
@@ -238,6 +240,11 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
             if self.count <= 0:  # comparison to make sure you only run loadAccounts after a search
                 self.searchedAccounts = {}
                 self.loadAccounts()
+
+    def importAccounts(self):
+        self.newWindow = importWin()
+        self.newWindow.show()   # show new window
+        self.hide()
 
 
 class addAccountWin(QtWidgets.QWidget):
@@ -382,6 +389,19 @@ class changePassWin(QtWidgets.QWidget):
                 updateAccounts(accounts)    # calls updateAccounts
                 Alert("Confirmed", QtWidgets.QMessageBox.Information, "Password Changed")
                 self.goBack()   # go to view account page after password is changed successfully
+
+
+class importWin(QtWidgets.QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ui = Ui_importAccounts()
+        self.ui.setupUi(self)
+        self.ui.cancelBtn.clicked.connect(self.goBack)
+
+    def goBack(self):
+        self.newWindow = allAccountsWin()
+        self.newWindow.show()   # show new window
+        self.hide()
 
 
 def getPathToDesktop():
