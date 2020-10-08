@@ -342,9 +342,13 @@ class viewAccountWin(QtWidgets.QWidget):
                 if value != "":
                     # stores accounts as nested lists seperated by value
                     accounts.append(value.split(','))
-            for i in range(len(accounts)):
-                if accounts[i] == VIEWEDITEM:
-                    accounts.pop(i)
+            for account in accounts:
+                if account == VIEWEDITEM:
+                    index = accounts.index(account)
+                    accounts.pop(index)
+                    # when this code was a for loop in range len(accounts) sometimes it would give
+                    # a random error when lots of accounts were added and then someone attempts to delete an account
+                    # although the code is now longer, this fixes the index error issue
             updateAccounts(accounts)    # calls updateAccounts
             self.goBack()
 
