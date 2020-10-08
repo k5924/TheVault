@@ -291,6 +291,7 @@ class viewAccountWin(QtWidgets.QWidget):
         self.ui.copyUserBtn.clicked.connect(self.copyUsername)
         self.ui.copyPassBtn.clicked.connect(self.copyPassword)
         self.ui.changePassBtn.clicked.connect(self.changePassword)
+        self.ui.deleteBtn.clicked.connect(self.deleteAccount)
 
     def goBack(self):
         self.newWindow = allAccountsWin()
@@ -313,6 +314,32 @@ class viewAccountWin(QtWidgets.QWidget):
         self.newWindow = changePassWin()
         self.newWindow.show()
         self.hide()
+
+    def deleteAccount(self):
+        message = QtWidgets.QMessageBox()
+        message.setWindowTitle("Warning")
+        message.setIcon(QtWidgets.QMessageBox.Warning)
+        message.setText("Are you sure you want to delete the account?")
+        message.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.Cancel)
+        message.setDefaultButton(QtWidgets.QMessageBox.Cancel)
+        message.buttonClicked.connect(self.confirmDelete)
+        message.exec_()
+
+    def confirmDelete(self, clickedBtn):
+        if clickedBtn.text() == "&Yes":
+            key, iv, data = getData(KEYPATH, VAULTPATH)
+            data = data.decode('utf-8')
+            row = data.split('\n')
+            accounts = []
+            for value in row:
+                if value != "":
+                    # stores accounts as nested lists seperated by value
+                    accounts.append(value.split(','))
+            for i in range(len(accounts)):
+                if accounts[i] == VIEWEDITEM:
+                    accounts.pop(i)
+            updateAccounts(accounts)    # calls updateAccounts
+            self.goBack()
 
 
 class changePassWin(QtWidgets.QWidget):
