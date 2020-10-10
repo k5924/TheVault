@@ -103,7 +103,7 @@ class generatePasswordWin(QtWidgets.QWidget):
             if self.ui.numbersCheck.isChecked():
                 passwordOptions += digits
             if self.ui.specialCharsCheck.isChecked():
-                passwordOptions += punctuation
+                passwordOptions += punctuation.replace(',', '')
             lengths = [i for i in range(8, 17)]
             passLength = random.choice(lengths)
             password = ""
@@ -127,6 +127,9 @@ class generatePasswordWin(QtWidgets.QWidget):
             elif " " in self.ui.usernameEdit.text():
                 Alert("Error", QtWidgets.QMessageBox.Critical,
                       "Please remove spaces from Username")
+            elif ("," in self.ui.nameOfAccountEdit.text()) or ("," in self.ui.usernameEdit.text()):
+                Alert("Error", QtWidgets.QMessageBox.Critical,
+                      "Please remove commas from name of account or username")
             else:
                 nameOfAccount = self.ui.nameOfAccountEdit.text()
                 username = self.ui.usernameEdit.text()
@@ -268,12 +271,12 @@ class addAccountWin(QtWidgets.QWidget):
             if (self.ui.nameOfAccountEdit.text()[0] == " ") or (self.ui.nameOfAccountEdit.text()[-1] == " "):
                 Alert("Error", QtWidgets.QMessageBox.Critical,
                       "Please remove spaces from the beginning or end of Account name")
-            elif " " in self.ui.usernameEdit.text():
+            elif (" " in self.ui.usernameEdit.text()) or (" " in self.ui.passwordEdit.text()):
                 Alert("Error", QtWidgets.QMessageBox.Critical,
-                      "Please remove spaces from Username")
-            elif " " in self.ui.passwordEdit.text():
+                      "Please remove spaces from Username or Password")
+            elif ("," in self.ui.nameOfAccountEdit.text()) or ("," in self.ui.usernameEdit.text()) or ("," in self.ui.passwordEdit.text()):
                 Alert("Error", QtWidgets.QMessageBox.Critical,
-                      "Please remove spaces from Password")
+                      "Please remove commas from Name of account, Username or Password")
             else:
                 nameOfAccount = self.ui.nameOfAccountEdit.text()
                 username = self.ui.usernameEdit.text()
@@ -375,8 +378,10 @@ class changePassWin(QtWidgets.QWidget):
         else:
             if self.ui.passwordEdit.text() != self.ui.confirmPassEdit.text():
                 Alert("Error", QtWidgets.QMessageBox.Critical, "Passwords dont match")
-            elif " " in (self.ui.passwordEdit.text() or self.ui.confirmPassEdit.text()):
+            elif (" " in self.ui.passwordEdit.text()) or (" " in self.ui.confirmPassEdit.text()):
                 Alert("Error", QtWidgets.QMessageBox.Critical, "Remove spaces from password fields")
+            elif ("," in self.ui.passwordEdit.text()) or ("," in self.ui.confirmPassEdit.text()):
+                Alert("Error", QtWidgets.QMessageBox.Critical, "Remove commas from password fields")
             else:
                 key, iv, data = getData(KEYPATH, VAULTPATH)
                 data = data.decode('utf-8')
