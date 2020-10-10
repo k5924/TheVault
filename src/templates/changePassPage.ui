@@ -118,6 +118,9 @@ font: 40pt &quot;Open Sans&quot;;</string>
     <property name="text">
      <string/>
     </property>
+    <property name="echoMode">
+     <enum>QLineEdit::PasswordEchoOnEdit</enum>
+    </property>
     <property name="placeholderText">
      <string>Enter new password</string>
     </property>
@@ -139,6 +142,9 @@ font: 40pt &quot;Open Sans&quot;;</string>
     </property>
     <property name="styleSheet">
      <string notr="true">border: 1 solid grey;</string>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::PasswordEchoOnEdit</enum>
     </property>
     <property name="placeholderText">
      <string>Confirm new password</string>
