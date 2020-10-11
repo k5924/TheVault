@@ -477,7 +477,7 @@ class importWin(QtWidgets.QWidget):
                           "Imported accounts from .JSON")
                     self.goBack()
             else:
-                Alert("Error", QtWidgets.QMessageBox.Critical, "File format not supported")
+                Alert("Error", QtWidgets.QMessageBox.Critical, "File type not supported")
 
 
 def getPathToDesktop():
