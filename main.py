@@ -1,6 +1,8 @@
 import sys
 import os
 import random
+import csv
+import json
 from platform import system
 from string import ascii_uppercase, ascii_lowercase, digits, punctuation
 from startPage import Ui_startPage
@@ -406,11 +408,76 @@ class importWin(QtWidgets.QWidget):
         self.ui = Ui_importAccounts()
         self.ui.setupUi(self)
         self.ui.cancelBtn.clicked.connect(self.goBack)
+        self.ui.selectFileBtn.clicked.connect(self.getFile)
+        self.ui.importBtn.clicked.connect(self.importData)
 
     def goBack(self):
         self.newWindow = allAccountsWin()
         self.newWindow.show()   # show new window
         self.hide()
+
+    def getFile(self):
+        file = QtWidgets.QFileDialog.getOpenFileName(
+            self, 'Open file', "", "All Files (*)")  # lets user choose files from explorer
+        url = QtCore.QUrl.fromLocalFile(file[0])    # gets path to file and stores it as an object
+        self.ui.fileLbl.setText(url.fileName())   # adjusts file name in gui
+        self.ui.fileLbl.adjustSize()     # adjusts size of text wrapper for file name in gui
+        self.Path = file[0]    # makes path accessible in importWin
+
+    def importData(self):
+        if self.ui.fileLbl.text() == "Select file to import from":
+            # checks that a Key File or Vault file have been selected
+            Alert("Error", QtWidgets.QMessageBox.Critical,
+                  "No file was selected. Please select a file to import from")
+            # Alert function to display error QMessageBox
+        else:
+            accounts = []
+            if self.ui.fileLbl.text().lower().endswith(".csv"):
+                with open(self.Path, 'r') as csvFile:
+                    reader = csv.DictReader(csvFile, delimiter=',')
+                    for row in reader:
+                        if ('name' in row) and ('username' in row) and ('password' in row):  # lastpass format
+                            if (row['username'] != "") and (row['password'] != "") and (row['name'] != ""):
+                                values = [row['name'], row['username'], row['password']]
+                                accounts.append(values)
+                        elif ('name' in row) and ('login_username' in row) and ('login_password' in row):   # bitwarden format
+                            if (row['name'] != "") and (row['login_username'] != "") and (row['login_password'] != ""):
+                                values = [row['name'], row['login_username'], row['login_password']]
+                                accounts.append(values)
+                if len(accounts) < 1:
+                    Alert("Error", QtWidgets.QMessageBox.Critical,
+                          "CSV file format not supported or no data to import was found")
+                else:
+                    for item in accounts:
+                        writeData(item[0], item[1], item[2])
+                    Alert("Confirmed", QtWidgets.QMessageBox.Information,
+                          "Imported accounts from .CSV")
+                    self.goBack()
+            elif self.ui.fileLbl.text().lower().endswith(".json"):
+                with open(self.Path) as jsonFile:
+                    data = json.load(jsonFile)
+                    if 'items' in data:
+                        for item in data['items']:  # checks for bitwarden format
+                            if 'login' in item:
+                                if ('username' in item['login']) and ('password' in item['login']):
+                                    if (item['login']['username'] is not None) and (item['login']['password'] is not None):
+                                        values = [item['name'], item['login']
+                                                  ['username'], item['login']['password']]
+                                        accounts.append(values)
+                    else:
+                        Alert("Error", QtWidgets.QMessageBox.Critical,
+                              "JSON file format not supported")
+                if len(accounts) < 1:
+                    Alert("Error", QtWidgets.QMessageBox.Critical,
+                          "JSON file has no data to import")
+                else:
+                    for item in accounts:
+                        writeData(item[0], item[1], item[2])
+                    Alert("Confirmed", QtWidgets.QMessageBox.Information,
+                          "Imported accounts from .JSON")
+                    self.goBack()
+            else:
+                Alert("Error", QtWidgets.QMessageBox.Critical, "File format not supported")
 
 
 def getPathToDesktop():
