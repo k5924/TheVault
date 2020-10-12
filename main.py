@@ -12,6 +12,7 @@ from AddAccountPage import Ui_addAccount
 from viewAccountPage import Ui_viewAccount
 from changePassPage import Ui_changePass
 from importAccountsPage import Ui_importAccounts
+from exportAccountsPage import Ui_exportPage
 from PyQt5 import QtWidgets, QtCore, QtGui
 from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
@@ -168,6 +169,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.ui.addAccountBtn.clicked.connect(self.addAccountManually)
         self.ui.searchBox.returnPressed.connect(self.searchAccounts)
         self.ui.importBtn.clicked.connect(self.importAccounts)
+        self.ui.exportBtn.clicked.connect(self.exportAccounts)
 
     def openGeneratePassTab(self):  # open generate password window
         self.newWindow = generatePasswordWin()
@@ -249,6 +251,11 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
     def importAccounts(self):
         self.newWindow = importWin()
         self.newWindow.show()   # show new window
+        self.hide()
+
+    def exportAccounts(self):
+        self.newWindow = exportWin()
+        self.newWindow.show()
         self.hide()
 
 
@@ -478,6 +485,27 @@ class importWin(QtWidgets.QWidget):
                     self.goBack()
             else:
                 Alert("Error", QtWidgets.QMessageBox.Critical, "File type not supported")
+
+
+class exportWin(QtWidgets.QWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ui = Ui_exportPage()
+        self.ui.setupUi(self)
+        self.ui.cancelBtn.clicked.connect(self.goBack)
+        self.ui.csvBtn.clicked.connect(self.exportCSV)
+        self.ui.jsonBtn.clicked.connect(self.exportJSON)
+
+    def goBack(self):
+        self.newWindow = allAccountsWin()
+        self.newWindow.show()
+        self.hide()
+
+    def exportCSV(self):
+        # code to export as CSV goes here
+
+    def exportJSON(self):
+        # code to export as JSON goes here
 
 
 def getPathToDesktop():
