@@ -502,10 +502,34 @@ class exportWin(QtWidgets.QWidget):
         self.hide()
 
     def exportCSV(self):
-        # code to export as CSV goes here
+        key, iv, data = getData(KEYPATH, VAULTPATH)
+        data = data.decode('utf-8')
+        path = getPathToDesktop()
+        path += "\Accounts.csv"
+        if data != "":
+            row = data.split('\n')
+            accounts = []
+            for value in row:
+                if value != "":
+                    terms = value.split(',')
+                    temp = {}
+                    temp["name"], temp["username"], temp["password"] = terms[0], terms[1], terms[2]
+                    accounts.append(temp)
+            with open(path, 'w') as file:   # writes to csv file in lastpass format as lastpass' format is widely supported
+                columns = ['url', 'username', 'password', 'extra', 'name', 'grouping', 'fav']
+                writer = csv.DictWriter(file, fieldnames=columns, lineterminator='\n')
+                writer.writeheader()
+                writer.writerows(accounts)
+            Alert("Confirmed", QtWidgets.QMessageBox.Information, "CSV file successfully created")
+        else:
+            Alert("Error", QtWidgets.QMessageBox.Critical, "No accounts to export")
+        self.goBack()
 
     def exportJSON(self):
-        # code to export as JSON goes here
+        key, iv, data = getData(KEYPATH, VAULTPATH)
+        data = data.decode('utf-8')
+        path = getPathToDesktop()
+        path += "\Accounts.json"
 
 
 def getPathToDesktop():
