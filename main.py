@@ -530,6 +530,28 @@ class exportWin(QtWidgets.QWidget):
         data = data.decode('utf-8')
         path = getPathToDesktop()
         path += "\Accounts.json"
+        if data != "":
+            row = data.split('\n')
+            accounts = {}
+            account = []
+            for value in row:
+                # json uses None for null and False for false when writing to a json
+                if value != "":
+                    terms = value.split(',')
+                    loginValues = {}
+                    uris = [{"match": None, "uri": "http://"}]
+                    loginValues['uris'], loginValues['username'], loginValues['password'], loginValues['totp'] = uris, terms[1], terms[2], None
+                    temp = {}
+                    temp['id'], temp['organizationId'], temp['folderId'], temp['type'], temp['name'], temp['notes'], temp[
+                        'favorite'], temp['login'], temp['collectionIds'] = "", None, None, 1, terms[0], None, False, loginValues, False
+                    account.append(temp)
+            accounts['items'] = account
+            with open(path, 'w') as file:     # writes to csv in lastpass format
+                json.dump(accounts, file, indent=4)
+            Alert("Confirmed", QtWidgets.QMessageBox.Information, "JSON file successfully created")
+        else:
+            Alert("Error", QtWidgets.QMessageBox.Critical, "No accounts to export")
+        self.goBack()
 
 
 def getPathToDesktop():
