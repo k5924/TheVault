@@ -163,16 +163,16 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.ui = Ui_allAccounts()
         self.ui.setupUi(self)
         # button which links to generate password window
-        self.ui.genPassTab.clicked.connect(self.openGeneratePassTab)
+        self.ui.genPassTab.clicked.connect(lambda: self.changeWindow(generatePasswordWin()))
         self.loadAccounts()
         self.ui.accountsTable.itemClicked.connect(self.viewItem)
-        self.ui.addAccountBtn.clicked.connect(self.addAccountManually)
+        self.ui.addAccountBtn.clicked.connect(lambda: self.changeWindow(addAccountWin()))
         self.ui.searchBox.returnPressed.connect(self.searchAccounts)
-        self.ui.importBtn.clicked.connect(self.importAccounts)
-        self.ui.exportBtn.clicked.connect(self.exportAccounts)
+        self.ui.importBtn.clicked.connect(lambda: self.changeWindow(importWin()))
+        self.ui.exportBtn.clicked.connect(lambda: self.changeWindow(exportWin()))
 
-    def openGeneratePassTab(self):  # open generate password window
-        self.newWindow = generatePasswordWin()
+    def changeWindow(self, classToAccess):  # open generate password window
+        self.newWindow = classToAccess
         self.newWindow.show()   # show new window
         self.hide()  # close old window
 
@@ -215,14 +215,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
                 for n, key in enumerate(sorted(self.searchedAccounts.keys())):
                     if row == n:
                         VIEWEDITEM = self.accounts[key]
-            self.newWindow = viewAccountWin()
-            self.newWindow.show()
-            self.hide()
-
-    def addAccountManually(self):
-        self.newWindow = addAccountWin()
-        self.newWindow.show()   # show new window
-        self.hide()
+            self.changeWindow(viewAccountWin())
 
     def searchAccounts(self):
         term = self.ui.searchBox.text()
@@ -247,16 +240,6 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
             if self.count <= 0:  # comparison to make sure you only run loadAccounts after a search
                 self.searchedAccounts = {}
                 self.loadAccounts()
-
-    def importAccounts(self):
-        self.newWindow = importWin()
-        self.newWindow.show()   # show new window
-        self.hide()
-
-    def exportAccounts(self):
-        self.newWindow = exportWin()
-        self.newWindow.show()
-        self.hide()
 
 
 class addAccountWin(QtWidgets.QWidget):
@@ -300,7 +283,7 @@ class viewAccountWin(QtWidgets.QWidget):
         super().__init__(*args, **kwargs)
         self.ui = Ui_viewAccount()
         self.ui.setupUi(self)
-        self.ui.backBtn.clicked.connect(self.goBack)
+        self.ui.backBtn.clicked.connect(lambda: self.changeWindow(allAccountsWin()))
         self.ui.nameOfAccountLbl.setText(VIEWEDITEM[0])
         self.ui.nameOfAccountLbl.adjustSize()
         self.ui.usernameLbl.setText(VIEWEDITEM[1])
@@ -309,11 +292,11 @@ class viewAccountWin(QtWidgets.QWidget):
         self.ui.passwordLbl.adjustSize()
         self.ui.copyUserBtn.clicked.connect(self.copyUsername)
         self.ui.copyPassBtn.clicked.connect(self.copyPassword)
-        self.ui.changePassBtn.clicked.connect(self.changePassword)
+        self.ui.changePassBtn.clicked.connect(lambda: self.changeWindow(changePassWin()))
         self.ui.deleteBtn.clicked.connect(self.deleteAccount)
 
-    def goBack(self):
-        self.newWindow = allAccountsWin()
+    def changeWindow(self, classToAccess):
+        self.newWindow = classToAccess
         self.newWindow.show()
         self.hide()
 
@@ -328,11 +311,6 @@ class viewAccountWin(QtWidgets.QWidget):
         cb.setText(self.ui.passwordLbl.text(), mode=cb.Clipboard)
         Alert("Confirmed", QtWidgets.QMessageBox.Information,
               "Password copied to clipboard")
-
-    def changePassword(self):
-        self.newWindow = changePassWin()
-        self.newWindow.show()
-        self.hide()
 
     def deleteAccount(self):
         message = QtWidgets.QMessageBox()
@@ -362,7 +340,7 @@ class viewAccountWin(QtWidgets.QWidget):
                     # a random error when lots of accounts were added and then someone attempts to delete an account
                     # although the code is now longer, this fixes the index error issue
             updateAccounts(accounts)    # calls updateAccounts
-            self.goBack()
+            self.changeWindow(allAccountsWin())
 
 
 class changePassWin(QtWidgets.QWidget):
