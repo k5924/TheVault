@@ -31,7 +31,7 @@ class MainWindow(QtWidgets.QWidget):
         self.ui.selectKeyFile.clicked.connect(self.getKeyFile)
         self.ui.selectVaultFile.clicked.connect(self.getVaultFile)
         self.ui.openButton.clicked.connect(self.openVaultFiles)
-        # button variabls which execute a specific function
+        # button variables which execute a specific function
 
     def createVaultFiles(self):
         key = get_random_bytes(32)  # 32 bytes is 256 bits
