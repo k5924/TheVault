@@ -171,7 +171,7 @@ class allAccountsWin(QtWidgets.QWidget):    # view all accounts window
         self.ui.importBtn.clicked.connect(lambda: self.changeWindow(importWin()))
         self.ui.exportBtn.clicked.connect(lambda: self.changeWindow(exportWin()))
 
-    def changeWindow(self, classToAccess):  # open generate password window
+    def changeWindow(self, classToAccess):  # takes new window argument
         self.newWindow = classToAccess
         self.newWindow.show()   # show new window
         self.hide()  # close old window
