@@ -18,7 +18,7 @@ from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
-# global variabls to store paths to vault and key file
+# global variables to store paths to the vault and key file
 global KEYPATH, VAULTPATH, VIEWEDITEM
 
 
